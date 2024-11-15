@@ -9,9 +9,10 @@ import morgan from "morgan";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
 
-import AppDataSource from "./data-source.js";
+import AppDataSource from "./data-source";
+import { errorHandler } from "./middlewares/error-handling";
 
-// import userRoutes from "./routes/user";
+import authRoutes from "./routes/auth";
 
 const clientAddress =
   process.env.ENVIRONMENT === "production"
@@ -37,6 +38,7 @@ app.use(
 );
 app.use(helmet());
 app.use(morgan("combined", { stream: accessLogStream }));
+app.use(errorHandler);
 // app.use("/images", express.static(path.join(__dirname, "images")));
 
 //db connection and starting express server
@@ -53,4 +55,4 @@ AppDataSource.initialize()
 app.get("/", (req, res) => {
   res.status(200).send("Home Page");
 });
-// app.use("/users", userRoutes);
+app.use(authRoutes);

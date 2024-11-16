@@ -1,4 +1,8 @@
 import { Request, Response, NextFunction } from "express";
+import winston from "winston";
+import { fileURLToPath } from "url";
+import path from "path";
+
 import { CustomError } from "./CustomError.js";
 
 export const errorHandler = (
@@ -7,7 +11,7 @@ export const errorHandler = (
   res: Response,
   next: NextFunction,
 ) => {
-  console.log(err);
+  logger.error(err.message);
   if (err instanceof CustomError) {
     res.status(err.statusCode).json({
       error: err.message,
@@ -17,8 +21,42 @@ export const errorHandler = (
 
   // Handle unexpected errors
   console.error("Unexpected error:", err);
+  logger.error(err.message, { stack: err.stack });
   res.status(500).json({
     error: "Internal Server Error",
   });
   return;
 };
+
+const __filename = fileURLToPath(import.meta.url);
+const logDir = path.resolve(path.dirname(__filename), "../logs");
+
+const logger = winston.createLogger({
+  level: "info",
+  defaultMeta: { service: "user-service" },
+  format: winston.format.combine(
+    winston.format.timestamp(),
+    winston.format.json(),
+  ),
+  transports: [
+    new winston.transports.File({ filename: path.join(logDir, "errors.log") }),
+  ],
+  exceptionHandlers: [
+    new winston.transports.File({
+      filename: path.join(logDir, "exceptions.log"),
+    }),
+  ],
+  rejectionHandlers: [
+    new winston.transports.File({
+      filename: path.join(logDir, "rejections.log"),
+    }),
+  ],
+});
+
+if (process.env.NODE_ENV !== "production") {
+  logger.add(
+    new winston.transports.Console({
+      format: winston.format.simple(),
+    }),
+  );
+}

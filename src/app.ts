@@ -25,7 +25,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const accessLogStream = fs.createWriteStream(
-  path.join(__dirname, "access.log"),
+  path.join(__dirname, "./logs/access.log"),
   { flags: "a" },
 );
 
@@ -38,7 +38,6 @@ app.use(
 );
 app.use(helmet());
 app.use(morgan("combined", { stream: accessLogStream }));
-app.use(errorHandler);
 // app.use("/images", express.static(path.join(__dirname, "images")));
 
 //db connection and starting express server
@@ -56,3 +55,4 @@ app.get("/", (req, res) => {
   res.status(200).send("Home Page");
 });
 app.use(authRoutes);
+app.use(errorHandler);

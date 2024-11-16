@@ -9,10 +9,10 @@ import morgan from "morgan";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
 
-import AppDataSource from "./data-source";
-import { errorHandler } from "./middlewares/error-handling";
+import AppDataSource from "./data-source.js";
+import { errorHandler } from "./middlewares/error-handling.js";
 
-import authRoutes from "./routes/auth";
+import authRoutes from "./routes/auth.js";
 
 const clientAddress =
   process.env.ENVIRONMENT === "production"

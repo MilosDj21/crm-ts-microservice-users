@@ -1,10 +1,13 @@
 import jwt from "jsonwebtoken";
 import { authenticator } from "otplib";
 import { NextFunction, Request, Response } from "express";
-import { BadRequestError, UnauthorizedError } from "../middlewares/CustomError";
 
-import User from "../entity/User";
-import AppDataSource from "../data-source";
+import {
+  BadRequestError,
+  UnauthorizedError,
+} from "../middlewares/CustomError.js";
+import User from "../entity/User.js";
+import AppDataSource from "../data-source.js";
 
 const createJwt = (id: number) => {
   //3 days in seconds

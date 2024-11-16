@@ -25,21 +25,24 @@ const createJwt = (id: number) => {
 const login = async (req: Request, res: Response, next: NextFunction) => {
   const { email, password, twoFaToken } = req.body;
   try {
-    if (!email || !password || !twoFaToken)
+    // TODO: after implementing two fa switch these
+    // if (!email || !password || !twoFaToken)
+    if (!email || !password)
       throw new BadRequestError("All fields must be filled");
 
     const userRepository = AppDataSource.getRepository(User);
     const user = await userRepository.findOneBy({ email, password });
-    if (!user) throw new UnauthorizedError("Unauthorized");
+    if (!user) throw new UnauthorizedError("Credentials not correct");
 
-    const twoFAValid = authenticator.verify({
-      token: twoFaToken,
-      secret: user.secret,
-    });
-    if (!twoFAValid) throw new UnauthorizedError("Unauthorized");
+    // TODO: after implementing two fa uncomment this
+    // const twoFAValid = authenticator.verify({
+    //   token: twoFaToken,
+    //   secret: user.secret,
+    // });
+    // if (!twoFAValid) throw new UnauthorizedError("Unauthorized");
 
     const jwtToken = createJwt(user.id);
-    if (!jwtToken) throw new Error("Error creating token");
+    if (!jwtToken) throw new Error("Creating jwt failed");
 
     res.status(200).json({ status: "success", data: jwtToken });
   } catch (err: any) {

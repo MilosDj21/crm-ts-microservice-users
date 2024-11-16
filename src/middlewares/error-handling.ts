@@ -11,8 +11,9 @@ export const errorHandler = (
   res: Response,
   next: NextFunction,
 ) => {
-  logger.error(err.message);
+  //If error is defined then log description, and send back message
   if (err instanceof CustomError) {
+    logger.error(err.desc);
     res.status(err.statusCode).json({
       error: err.message,
     });
@@ -20,7 +21,8 @@ export const errorHandler = (
   }
 
   // Handle unexpected errors
-  console.error("Unexpected error:", err);
+  // If error is unexpected then log message, and send back custom message
+  // console.error("Unexpected error:", err);
   logger.error(err.message, { stack: err.stack });
   res.status(500).json({
     error: "Internal Server Error",

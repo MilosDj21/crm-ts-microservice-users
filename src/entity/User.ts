@@ -15,12 +15,12 @@ class User {
   firstName!: string;
 
   @Column()
-  lastName!: boolean;
+  lastName!: string;
 
-  @Column({ default: "" })
+  @Column({ nullable: true })
   profileImage!: string;
 
-  @Column()
+  @Column({ nullable: true })
   secret!: string;
 }
 

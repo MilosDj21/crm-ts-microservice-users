@@ -11,6 +11,7 @@ import { dirname } from "path";
 
 import AppDataSource from "./data-source.js";
 import { errorHandler } from "./middlewares/error-handling.js";
+import { BadRequestError } from "./middlewares/CustomError.js";
 
 import authRoutes from "./routes/auth.js";
 
@@ -54,5 +55,11 @@ AppDataSource.initialize()
 app.get("/", (req, res) => {
   res.status(200).send("Home Page");
 });
-app.use(authRoutes);
+app.use("/api/v1", authRoutes);
+
+// Fallback route for non-existent endpoints
+app.use((req, res, next) => {
+  next(new BadRequestError("Endpoint not found."));
+});
+
 app.use(errorHandler);

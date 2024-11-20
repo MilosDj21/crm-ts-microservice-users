@@ -45,7 +45,7 @@ const login = async (req: Request, res: Response, next: NextFunction) => {
     if (!jwtToken) throw new Error("Creating jwt failed");
 
     res.status(200).json({ status: "success", data: jwtToken });
-  } catch (err: any) {
+  } catch (err) {
     next(err);
   }
 };

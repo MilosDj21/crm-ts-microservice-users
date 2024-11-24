@@ -31,6 +31,7 @@ const login = async (email: string, password: string) => {
 
   const jwtToken = createJwt(user.id);
   if (!jwtToken) throw new Error("Creating jwt failed");
+  return jwtToken;
 };
 
 export default { login };

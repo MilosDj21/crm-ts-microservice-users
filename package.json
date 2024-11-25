@@ -2,11 +2,10 @@
   "name": "users-ms-ts",
   "version": "1.0.0",
   "main": "./dist/app.js",
-  "type": "module",
   "scripts": {
     "test": "jest",
     "test:coverage": "jest --coverage",
-    "start:dev": "nodemon --exec node --loader ts-node/esm src/app.ts",
+    "start:dev": "nodemon ./src/app.ts",
     "start": "node ./dist/app.js"
   },
   "keywords": [],

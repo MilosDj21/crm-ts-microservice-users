@@ -1,8 +1,8 @@
 import { authenticator } from "otplib";
 import { NextFunction, Request, Response } from "express";
 
-import { BadRequestError } from "../middlewares/CustomError.js";
-import userService from "../services/auth.js";
+import { BadRequestError } from "../middlewares/CustomError";
+import userService from "../services/auth";
 
 const login = async (req: Request, res: Response, next: NextFunction) => {
   const { email, password, twoFaToken } = req.body;

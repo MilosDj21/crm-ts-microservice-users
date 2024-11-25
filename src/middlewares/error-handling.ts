@@ -1,9 +1,8 @@
 import { Request, Response, NextFunction } from "express";
 import winston from "winston";
-import { fileURLToPath } from "url";
 import path from "path";
 
-import { CustomError } from "./CustomError.js";
+import { CustomError } from "./CustomError";
 
 export const errorHandler = (
   err: any,
@@ -30,7 +29,6 @@ export const errorHandler = (
   return;
 };
 
-const __filename = fileURLToPath(import.meta.url);
 const logDir = path.resolve(path.dirname(__filename), "../logs");
 
 const logger = winston.createLogger({

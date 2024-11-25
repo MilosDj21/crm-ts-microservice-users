@@ -6,14 +6,12 @@ import express from "express";
 import cors from "cors";
 import helmet from "helmet";
 import morgan from "morgan";
-import { fileURLToPath } from "url";
-import { dirname } from "path";
 
-import AppDataSource from "./data-source.js";
-import { errorHandler } from "./middlewares/error-handling.js";
-import { BadRequestError } from "./middlewares/CustomError.js";
+import AppDataSource from "./data-source";
+import { errorHandler } from "./middlewares/error-handling";
+import { BadRequestError } from "./middlewares/CustomError";
 
-import authRoutes from "./routes/auth.js";
+import authRoutes from "./routes/auth";
 
 const clientAddress =
   process.env.ENVIRONMENT === "production"
@@ -21,9 +19,6 @@ const clientAddress =
     : "http://localhost:3000";
 
 const app = express();
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
 
 const accessLogStream = fs.createWriteStream(
   path.join(__dirname, "./logs/access.log"),

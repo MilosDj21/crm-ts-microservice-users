@@ -1,8 +1,8 @@
 import jwt from "jsonwebtoken";
 
-import User from "../entity/User.js";
-import AppDataSource from "../data-source.js";
-import { UnauthorizedError } from "../middlewares/CustomError.js";
+import User from "../entity/User";
+import AppDataSource from "../data-source";
+import { UnauthorizedError } from "../middlewares/CustomError";
 
 const createJwt = (id: number) => {
   //3 days in seconds

@@ -43,7 +43,7 @@ class NotFoundError extends CustomError {
 }
 
 /**
- * Custom error class for "Unauthorized" errors (HTTP 403)
+ * Custom error class for "Unauthorized" errors (HTTP 401)
  * @class
  * @extends {CustomError}
  */
@@ -54,7 +54,7 @@ class UnauthorizedError extends CustomError {
    * @param desc - used for logging
    */
   constructor(message: string, desc: string = "") {
-    super(message, 403, desc);
+    super(message, 401, desc);
     Object.setPrototypeOf(this, UnauthorizedError.prototype);
   }
 }

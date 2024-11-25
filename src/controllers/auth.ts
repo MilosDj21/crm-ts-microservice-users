@@ -12,7 +12,7 @@ const login = async (req: Request, res: Response, next: NextFunction) => {
     if (!email || !password)
       throw new BadRequestError("All fields must be filled");
 
-    const jwtToken = userService.login(email, password);
+    const jwtToken = await userService.login(email, password);
 
     res.status(200).json({ data: jwtToken });
   } catch (err) {

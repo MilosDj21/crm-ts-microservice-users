@@ -12,7 +12,7 @@ import authRoutes from "./routes/auth";
 
 export const createApp = () => {
   const clientAddress =
-    process.env.ENVIRONMENT === "production"
+    process.env.NODE_ENV === "production"
       ? process.env.CLIENT_ADDRESS
       : "http://localhost:3000";
 

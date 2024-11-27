@@ -22,17 +22,11 @@ const verifyToken = async (req: Request, res: Response, next: NextFunction) => {
     if (!secret) throw new Error("Jwt secret non existent");
 
     if (!tokenHeader)
-      throw new UnauthorizedError(
-        "Credentials not correct",
-        "No token header in request",
-      );
+      throw new UnauthorizedError("Unauthorized", "No token header in request");
 
     const token = tokenHeader.split(" ")[1];
     if (!token)
-      throw new UnauthorizedError(
-        "Credentials not correct",
-        "No token header in request",
-      );
+      throw new UnauthorizedError("Unauthorized", "No token header in request");
 
     let decoded = null;
     try {

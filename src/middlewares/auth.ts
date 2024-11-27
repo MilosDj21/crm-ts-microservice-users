@@ -56,12 +56,12 @@ const verifyToken = async (req: Request, res: Response, next: NextFunction) => {
         "User id not valid",
       );
 
-    req.userId = decoded.id;
-
     const userRepository = AppDataSource.getRepository(User);
-    const user = await userRepository.findOneBy({ id: req.userId });
+    const user = await userRepository.findOneBy({ id: decoded.id });
     if (!user)
       throw new UnauthorizedError("Credentials not correct", "User not found");
+
+    req.userId = decoded.id;
 
     next();
   } catch (error) {

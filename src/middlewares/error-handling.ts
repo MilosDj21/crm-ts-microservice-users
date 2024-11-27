@@ -23,6 +23,7 @@ export const errorHandler = (
   // If error is unexpected then log message, and send back custom message
   // console.error("Unexpected error:", err);
   logger.error(err.message, { stack: err.stack });
+  if (process.env.NODE_ENV !== "production") console.log(err);
   res.status(500).json({
     error: "Internal Server Error",
   });
@@ -53,10 +54,10 @@ const logger = winston.createLogger({
   ],
 });
 
-if (process.env.NODE_ENV !== "production") {
-  logger.add(
-    new winston.transports.Console({
-      format: winston.format.simple(),
-    }),
-  );
-}
+// if (process.env.NODE_ENV !== "production") {
+//   logger.add(
+//     new winston.transports.Console({
+//       format: winston.format.simple(),
+//     }),
+//   );
+// }

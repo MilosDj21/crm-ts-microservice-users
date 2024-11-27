@@ -9,6 +9,7 @@ import { errorHandler } from "./middlewares/error-handling";
 import { BadRequestError } from "./middlewares/CustomError";
 
 import authRoutes from "./routes/auth";
+import userRoutes from "./routes/user";
 
 export const createApp = () => {
   const clientAddress =
@@ -32,13 +33,14 @@ export const createApp = () => {
   );
   app.use(helmet());
   app.use(morgan("combined", { stream: accessLogStream }));
-  // app.use("/images", express.static(path.join(__dirname, "images")));
+  app.use("/images", express.static(path.join(__dirname, "images")));
 
   //routes
   app.get("/", (req, res) => {
     res.status(200).send("Home Page");
   });
-  app.use("/api/v1", authRoutes);
+  app.use("/api/v1/auth", authRoutes);
+  app.use("/api/v1/users", userRoutes);
 
   // Fallback route for non-existent endpoints
   app.use((req, res, next) => {

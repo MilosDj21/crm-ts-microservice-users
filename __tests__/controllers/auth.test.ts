@@ -6,7 +6,7 @@ import { createApp } from "../../src/createApp";
 
 jest.mock("../../src/services/auth"); // Automatically replaces all exports in `userService` with Jest mock functions
 
-describe("User Controller - Login", () => {
+describe("Auth Controller - Login", () => {
   let app: Application;
 
   beforeAll(() => {

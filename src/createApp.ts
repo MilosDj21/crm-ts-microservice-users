@@ -36,9 +36,6 @@ export const createApp = () => {
   app.use("/images", express.static(path.join(__dirname, "images")));
 
   //routes
-  app.get("/", (req, res) => {
-    res.status(200).send("Home Page");
-  });
   app.use("/api/v1/auth", authRoutes);
   app.use("/api/v1/users", userRoutes);
 

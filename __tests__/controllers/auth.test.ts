@@ -21,7 +21,7 @@ describe("Auth Controller - Login", () => {
     jest.spyOn(authService, "login").mockResolvedValue("fake-token");
 
     const response = await request(app)
-      .post("/api/v1/login")
+      .post("/api/v1/auth/login")
       .send({ email: "test@example.com", password: "password123" });
 
     expect(response.status).toBe(200);
@@ -34,7 +34,7 @@ describe("Auth Controller - Login", () => {
 
   it("should return 400 when email is missing", async () => {
     const response = await request(app)
-      .post("/api/v1/login")
+      .post("/api/v1/auth/login")
       .send({ email: "", password: "password123" });
 
     expect(response.status).toBe(400);
@@ -43,7 +43,7 @@ describe("Auth Controller - Login", () => {
 
   it("should return 400 when password is missing", async () => {
     const response = await request(app)
-      .post("/api/v1/login")
+      .post("/api/v1/auth/login")
       .send({ email: "test@example.com", password: "" });
 
     expect(response.status).toBe(400);
@@ -56,7 +56,7 @@ describe("Auth Controller - Login", () => {
       .mockRejectedValue(new UnauthorizedError("Credentials not correct"));
 
     const response = await request(app)
-      .post("/api/v1/login")
+      .post("/api/v1/auth/login")
       .send({ email: "test@example.com", password: "wrongpassword" });
 
     expect(response.status).toBe(401);

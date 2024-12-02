@@ -1,12 +1,12 @@
 import { Application } from "express";
 import request from "supertest";
-import authService from "../../src/services/auth";
-import { UnauthorizedError } from "../../src/middlewares/CustomError";
-import { createApp } from "../../src/createApp";
+import authService from "../../../src/services/auth";
+import { UnauthorizedError } from "../../../src/middlewares/CustomError";
+import { createApp } from "../../../src/createApp";
 
-jest.mock("../../src/services/auth"); // Automatically replaces all exports in `userService` with Jest mock functions
+jest.mock("../../../src/services/auth"); // Automatically replaces all exports in `userService` with Jest mock functions
 
-describe("Auth Controller - Login", () => {
+describe("Login Route + Controller Integration Test", () => {
   let app: Application;
 
   beforeAll(() => {

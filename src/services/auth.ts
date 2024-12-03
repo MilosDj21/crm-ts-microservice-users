@@ -3,48 +3,58 @@ import { authenticator } from "otplib";
 import bcrypt from "bcrypt";
 
 import User from "../entity/User";
-import AppDataSource from "../data-source";
 import { UnauthorizedError } from "../middlewares/CustomError";
+import { Repository } from "typeorm";
 
-const createJwt = (id: number) => {
-  //3 days in seconds
-  const maxAge = 3 * 24 * 60 * 60;
-  const secret = process.env.JWT_SECRET;
-  if (secret) {
-    return jwt.sign({ id }, secret, {
-      expiresIn: maxAge,
-    });
-  } else {
-    return null;
+class AuthService {
+  private userRepository: Repository<User>;
+
+  constructor(userRepository: Repository<User>) {
+    this.userRepository = userRepository;
   }
-};
 
-const login = async (email: string, password: string, twoFaToken: string) => {
-  const userRepository = AppDataSource.getRepository(User);
-  const user = await userRepository.findOneBy({ email });
-  if (!user) throw new UnauthorizedError("Credentials not correct");
+  private createJwt(id: number) {
+    //3 days in seconds
+    const maxAge = 3 * 24 * 60 * 60;
+    const secret = process.env.JWT_SECRET;
+    if (secret) {
+      return jwt.sign({ id }, secret, {
+        expiresIn: maxAge,
+      });
+    } else {
+      return null;
+    }
+  }
 
-  const auth = await bcrypt.compare(password, user.password);
-  if (!auth) throw new UnauthorizedError("Credentials not correct");
+  async login(email: string, password: string, twoFaToken: string) {
+    const user = await this.userRepository.findOneBy({ email });
+    if (!user) throw new UnauthorizedError("Credentials not correct");
 
-  const twoFAValid = authenticator.verify({
-    token: twoFaToken,
-    secret: user.secret,
-  });
-  if (!twoFAValid)
-    throw new UnauthorizedError("Credentials not correct", "Two FA not valid");
+    const auth = await bcrypt.compare(password, user.password);
+    if (!auth) throw new UnauthorizedError("Credentials not correct");
 
-  const jwtToken = createJwt(user.id);
-  if (!jwtToken) throw new Error("Creating jwt failed");
+    const twoFAValid = authenticator.verify({
+      token: twoFaToken,
+      secret: user.secret,
+    });
+    if (!twoFAValid)
+      throw new UnauthorizedError(
+        "Credentials not correct",
+        "Two FA not valid",
+      );
 
-  return {
-    id: user.id,
-    email: user.email,
-    firstName: user.firstName,
-    lastName: user.lastName,
-    profileImage: user.profileImage,
-    jwtToken,
-  };
-};
+    const jwtToken = this.createJwt(user.id);
+    if (!jwtToken) throw new Error("Creating jwt failed");
 
-export default { login };
+    return {
+      id: user.id,
+      email: user.email,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      profileImage: user.profileImage,
+      jwtToken,
+    };
+  }
+}
+
+export default AuthService;

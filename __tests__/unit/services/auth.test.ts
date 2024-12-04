@@ -71,4 +71,17 @@ describe("Auth Service - login", () => {
       jwtToken: "fakeJwtToken",
     });
   });
+
+  it("should throw UnauthorizedError when email is not correct", async () => {
+    userRepository.findOneBy.mockResolvedValue(null);
+
+    await expect(
+      authService.login("test@example.com", "password123", "twoFaToken"),
+    ).rejects.toThrow(new UnauthorizedError("Credentials not correct"));
+
+    expect(userRepository.findOneBy).toHaveBeenCalledWith({
+      email: "test@example.com",
+    });
+  });
+
 });

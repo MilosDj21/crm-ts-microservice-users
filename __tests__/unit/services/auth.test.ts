@@ -84,4 +84,30 @@ describe("Auth Service - login", () => {
     });
   });
 
+  it("should throw UnauthorizedError when password is not correct", async () => {
+    const mockUser = {
+      id: 1,
+      email: "test@example.com",
+      password: "hashedPassword",
+      firstName: "firstName",
+      lastName: "lastName",
+      profileImage: "imagePath",
+      secret: "twoFaSecret",
+    };
+
+    userRepository.findOneBy.mockResolvedValue(mockUser);
+    (bcrypt.compare as jest.Mock).mockResolvedValue(false);
+
+    await expect(
+      authService.login("test@example.com", "password123", "twoFaToken"),
+    ).rejects.toThrow(new UnauthorizedError("Credentials not correct"));
+
+    expect(userRepository.findOneBy).toHaveBeenCalledWith({
+      email: "test@example.com",
+    });
+    expect(bcrypt.compare).toHaveBeenCalledWith(
+      "password123",
+      "hashedPassword",
+    );
+  });
 });

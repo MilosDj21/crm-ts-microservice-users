@@ -5,6 +5,7 @@ import jwt from "jsonwebtoken";
 import AuthService from "../../../src/services/auth";
 import { Repository } from "typeorm";
 import User from "../../../src/entity/User";
+import { UnauthorizedError } from "../../../src/middlewares/CustomError";
 
 jest.mock("bcrypt");
 jest.mock("otplib");
@@ -39,7 +40,7 @@ describe("Auth Service - login", () => {
 
     userRepository.findOneBy.mockResolvedValue(mockUser);
     (bcrypt.compare as jest.Mock).mockResolvedValue(true);
-    (authenticator.verify as jest.Mock).mockResolvedValue(true);
+    (authenticator.verify as jest.Mock).mockReturnValue(true);
     (jwt.sign as jest.Mock).mockReturnValue("fakeJwtToken");
 
     const user = await authService.login(

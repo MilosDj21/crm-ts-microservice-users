@@ -144,4 +144,40 @@ describe("Auth Service - login", () => {
       secret: "twoFaSecret",
     });
   });
+
+  it("should throw Error when creating JWT fails", async () => {
+    const mockUser = {
+      id: 1,
+      email: "test@example.com",
+      password: "hashedPassword",
+      firstName: "firstName",
+      lastName: "lastName",
+      profileImage: "imagePath",
+      secret: "twoFaSecret",
+    };
+
+    userRepository.findOneBy.mockResolvedValue(mockUser);
+    (bcrypt.compare as jest.Mock).mockResolvedValue(true);
+    (authenticator.verify as jest.Mock).mockReturnValue(true);
+    (jwt.sign as jest.Mock).mockReturnValue(null);
+
+    await expect(
+      authService.login("test@example.com", "password123", "twoFaToken"),
+    ).rejects.toThrow(Error("Creating jwt failed"));
+
+    expect(userRepository.findOneBy).toHaveBeenCalledWith({
+      email: "test@example.com",
+    });
+    expect(bcrypt.compare).toHaveBeenCalledWith(
+      "password123",
+      "hashedPassword",
+    );
+    expect(authenticator.verify).toHaveBeenCalledWith({
+      token: "twoFaToken",
+      secret: "twoFaSecret",
+    });
+    expect(jwt.sign).toHaveBeenCalledWith({ id: 1 }, "jwtSecret", {
+      expiresIn: 3 * 24 * 60 * 60,
+    });
+  });
 });

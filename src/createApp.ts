@@ -33,7 +33,7 @@ export const createApp = () => {
   );
   app.use(helmet());
   app.use(morgan("combined", { stream: accessLogStream }));
-  app.use("/images", express.static(path.join(__dirname, "images")));
+  app.use("/images", express.static(path.join(__dirname, "../images")));
 
   //routes
   app.use("/api/v1/auth", authRoutes);

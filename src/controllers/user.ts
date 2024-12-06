@@ -1,7 +1,9 @@
 import { NextFunction, Request, Response } from "express";
 
 import { BadRequestError } from "../middlewares/CustomError";
-import userService from "../services/user";
+import UserService from "../services/user";
+import AppDataSource from "../data-source";
+import User from "../entity/User";
 
 declare module "express" {
   export interface Request {
@@ -18,6 +20,8 @@ const saveOne = async (req: Request, res: Response, next: NextFunction) => {
     if (!email || !password || !firstName || !lastName)
       throw new BadRequestError("All fields must be filled");
 
+    const userRepository = AppDataSource.getRepository(User);
+    const userService = new UserService(userRepository);
     const imageQr = await userService.saveOne(
       email,
       password,

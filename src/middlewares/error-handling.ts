@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import winston from "winston";
 import path from "path";
+import fs from "fs";
 
 import { CustomError } from "./CustomError";
 
@@ -10,6 +11,10 @@ export const errorHandler = (
   res: Response,
   next: NextFunction,
 ) => {
+  //If creating user fails for any reason his profile image needs to be deleted
+  const profileImage = req.file;
+  removeProfileImageOnCreateUserFail(profileImage);
+
   //If error is defined then log description, and send back message
   if (err instanceof CustomError) {
     logger.error(err.desc);
@@ -53,6 +58,22 @@ const logger = winston.createLogger({
     }),
   ],
 });
+
+const removeProfileImageOnCreateUserFail = (
+  profileImage: Express.Multer.File | undefined,
+) => {
+  if (profileImage) {
+    fs.unlink(
+      path.join(__dirname, `../../${profileImage.path}`),
+      (error: any) => {
+        if (error) {
+          logger.error(error);
+          console.log(error);
+        }
+      },
+    );
+  }
+};
 
 // if (process.env.NODE_ENV !== "production") {
 //   logger.add(

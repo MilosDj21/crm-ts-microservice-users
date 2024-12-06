@@ -1,6 +1,4 @@
 import { NextFunction, Request, Response } from "express";
-import fs from "fs";
-import path from "path";
 
 import { BadRequestError } from "../middlewares/CustomError";
 import userService from "../services/user";
@@ -33,11 +31,6 @@ const saveOne = async (req: Request, res: Response, next: NextFunction) => {
       message: "Added Successfully!",
     });
   } catch (err) {
-    if (profileImage) {
-      fs.unlink(path.join(__dirname, `../${profileImage.path}`), (error) => {
-        if (error) console.log(error);
-      });
-    }
     next(err);
   }
 };

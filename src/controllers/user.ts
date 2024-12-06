@@ -7,9 +7,7 @@ import User from "../entity/User";
 
 declare module "express" {
   export interface Request {
-    file?: {
-      path: string;
-    };
+    file?: Express.Multer.File;
   }
 }
 

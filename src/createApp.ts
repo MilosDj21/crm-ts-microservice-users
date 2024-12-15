@@ -10,6 +10,7 @@ import { BadRequestError } from "./middlewares/CustomError";
 
 import authRoutes from "./routes/auth";
 import userRoutes from "./routes/user";
+import roleRoutes from "./routes/role";
 
 export const createApp = () => {
   const clientAddress =
@@ -38,6 +39,7 @@ export const createApp = () => {
   //routes
   app.use("/api/v1/auth", authRoutes);
   app.use("/api/v1/users", userRoutes);
+  app.use("/api/v1/roles", roleRoutes);
 
   // Fallback route for non-existent endpoints
   app.use((req, res, next) => {

@@ -28,10 +28,18 @@ class AuthService {
 
   async login(email: string, password: string, twoFaToken: string) {
     const user = await this.userRepository.findOneBy({ email });
-    if (!user) throw new UnauthorizedError("Credentials not correct");
+    if (!user)
+      throw new UnauthorizedError(
+        "Credentials not correct",
+        "Email is not correct",
+      );
 
     const auth = await bcrypt.compare(password, user.password);
-    if (!auth) throw new UnauthorizedError("Credentials not correct");
+    if (!auth)
+      throw new UnauthorizedError(
+        "Credentials not correct",
+        "Passwords dont match",
+      );
 
     const twoFAValid = authenticator.verify({
       token: twoFaToken,

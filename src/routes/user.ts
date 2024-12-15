@@ -6,6 +6,7 @@ import multerConf from "../middlewares/multerConf";
 
 const router = Router();
 
+// TODO: Add middleware verification that only admins can create, update, and delete users
 router.use(verifyToken);
 
 router.post("/", [multerConf], saveOne);

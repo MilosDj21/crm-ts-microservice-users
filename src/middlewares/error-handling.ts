@@ -15,6 +15,8 @@ export const errorHandler = (
   const profileImage = req.file;
   removeProfileImageOnCreateUserFail(profileImage);
 
+  if (process.env.NODE_ENV !== "production") console.log(err);
+
   //If error is defined then log description, and send back message
   if (err instanceof CustomError) {
     logger.error(err.desc);
@@ -28,7 +30,6 @@ export const errorHandler = (
   // If error is unexpected then log message, and send back custom message
   // console.error("Unexpected error:", err);
   logger.error(err.message, { stack: err.stack });
-  if (process.env.NODE_ENV !== "production") console.log(err);
   res.status(500).json({
     error: "Internal Server Error",
   });

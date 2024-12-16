@@ -6,7 +6,7 @@ import jwt, {
 import { Request, Response, NextFunction } from "express";
 
 import User from "../entity/User";
-import { UnauthorizedError } from "./CustomError";
+import { ForbiddenError, UnauthorizedError } from "./CustomError";
 import AppDataSource from "../data-source";
 
 declare module "express" {
@@ -63,4 +63,31 @@ const verifyToken = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
-export { verifyToken };
+const isAdmin = async (req: Request, res: Response, next: NextFunction) => {
+  const userId = req.userId;
+  try {
+    if (!userId)
+      throw new UnauthorizedError("Unauthorized", "User id non existent");
+
+    const userRepository = AppDataSource.getRepository(User);
+    const user = await userRepository.findOne({
+      where: { id: userId },
+      relations: { roles: true },
+    });
+    if (!user) throw new UnauthorizedError("Unauthorized", "Invalid User");
+
+    let isAdmin = false;
+    for (const role of user.roles) {
+      if (role.name === "Admin") isAdmin = true;
+    }
+    if (isAdmin) {
+      next();
+    } else {
+      throw new ForbiddenError("Require admin role");
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+export { verifyToken, isAdmin };

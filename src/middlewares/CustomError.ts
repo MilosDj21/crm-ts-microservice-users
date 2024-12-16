@@ -59,4 +59,27 @@ class UnauthorizedError extends CustomError {
   }
 }
 
-export { CustomError, BadRequestError, NotFoundError, UnauthorizedError };
+/**
+ * Custom error class for "Forbidden" errors (HTTP 403)
+ * @class
+ * @extends {CustomError}
+ */
+class ForbiddenError extends CustomError {
+  /**
+   * Creates an instance of ForbiddenError
+   * @param message - sent back to client
+   * @param desc - used for logging
+   */
+  constructor(message: string, desc: string = "") {
+    super(message, 403, desc);
+    Object.setPrototypeOf(this, ForbiddenError.prototype);
+  }
+}
+
+export {
+  CustomError,
+  BadRequestError,
+  NotFoundError,
+  UnauthorizedError,
+  ForbiddenError,
+};

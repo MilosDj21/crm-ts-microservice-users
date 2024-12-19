@@ -9,7 +9,9 @@ class Role {
   @Column({ unique: true })
   name!: string;
 
-  @ManyToMany(() => User, (user) => user.roles)
+  @ManyToMany(() => User, (user) => user.roles, {
+    onDelete: "CASCADE",
+  })
   users!: User[];
 }
 

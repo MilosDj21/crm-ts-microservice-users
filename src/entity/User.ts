@@ -30,7 +30,10 @@ class User {
   @Column({ nullable: true })
   secret!: string;
 
-  @ManyToMany(() => Role, (role) => role.users)
+  @ManyToMany(() => Role, (role) => role.users, {
+    cascade: true,
+    onDelete: "CASCADE",
+  })
   @JoinTable()
   roles!: Role[];
 }

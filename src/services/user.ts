@@ -20,54 +20,35 @@ class UserService {
     this.roleRepository = roleRepository;
   }
 
-  saveOne = async (
-    email: string,
-    password: string,
-    firstName: string,
-    lastName: string,
-    profileImage: string,
-    roleIds: Array<number>,
-  ) => {
-    if (!isEmail(email)) throw new BadRequestError("Not a valid email!");
-    if (!isStrongPassword(password))
-      throw new BadRequestError("Password not strong enough!");
+  //TODO: zavrsi implementaciju ostalih, i refactor create
+  public findById = async (id: number) => {};
 
-    const exist = await this.userRepository.findOneBy({ email });
+  public findByEmail = async (email: string) => {};
+
+  public findAll = async () => {};
+
+  public create = async (userObject: User) => {
+    const exist = await this.userRepository.findOneBy({
+      email: userObject.email,
+    });
     if (exist) throw new BadRequestError("Email already in use!");
 
-    const roles = await this.roleRepository.findBy({ id: In(roleIds) });
+    const roles = await this.roleRepository.findBy({
+      id: In(userObject.roles),
+    });
     if (!roles) throw new BadRequestError("Non existent roles!");
 
-    const salt = await bcrypt.genSalt();
-    const hashPassword = await bcrypt.hash(password, salt);
+    userObject.roles = roles;
 
-    const secret = authenticator.generateSecret();
-    const otpauth = authenticator.keyuri(email, "Imaginary CRM", secret);
-    let imageQr = "";
-    qrcode.toDataURL(
-      otpauth,
-      (error: Error | null | undefined, imageUrl: string) => {
-        if (error) {
-          console.log(error);
-          return;
-        }
-        imageQr = imageUrl;
-      },
-    );
-
-    const user = await this.userRepository.save({
-      email,
-      password: hashPassword,
-      firstName,
-      lastName,
-      profileImage,
-      secret,
-      roles,
-    });
+    const user = await this.userRepository.save(userObject);
     if (!user) throw new Error("Failed to save user to the db");
 
-    return imageQr;
+    return user;
   };
+
+  public update = async (id: number) => {};
+
+  public removeById = async (id: number) => {};
 }
 
 export default UserService;

@@ -2,16 +2,10 @@ import "reflect-metadata";
 import "dotenv/config";
 import AppDataSource from "./data-source";
 
-import { createApp } from "./createApp";
-
-const app = createApp();
-
-//db connection and starting express server
+//db connection and connecting kafka client
 AppDataSource.initialize()
   .then(() => {
     console.log("Connected to the database");
-    app.listen(process.env.PORT, () =>
-      console.log(`Listening on port: ${process.env.PORT}`),
-    );
+    //TODO: inicijalizuj kafka client
   })
   .catch((error: any) => console.log(error));

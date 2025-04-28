@@ -19,6 +19,15 @@ class RoleService {
     return role;
   };
 
+  //TODO: vidi da li moze ovako, posto treba number[] a ne Role[] ali user servis tako salje
+  findByIdList = async (idList: Role[]) => {
+    const roles = await this.roleRepository.findBy({
+      id: In(idList),
+    });
+    if (roles.length == 0) return null;
+    return roles;
+  };
+
   find = async (searchTerm: string = "") => {
     const roles = await this.roleRepository.findBy({
       name: Like(`%${searchTerm}%`),

@@ -29,9 +29,8 @@ class UserService {
     });
     if (exist) throw new BadRequestError("Email already in use!");
 
-    const roles = await this.roleRepository.findBy({
-      id: In(userObject.roles),
-    });
+    const roleService = new RoleService();
+    const roles = await roleService.findByIdList(userObject.roles);
     if (!roles) throw new BadRequestError("Non existent roles!");
 
     userObject.roles = roles;

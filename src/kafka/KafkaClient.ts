@@ -66,10 +66,11 @@ class KafkaClient {
           message.headers["correlationId"] &&
           message.value
         ) {
-          const parsed = JSON.parse(message.value.toString());
           const correlationId = message.headers["correlationId"];
 
           try {
+            const parsed = JSON.parse(message.value.toString());
+
             let user;
             switch (topic) {
               case topics[0]:
@@ -164,17 +165,21 @@ class KafkaClient {
     requestTopic: string,
     correlationId: string,
   ) => {
-    requestTopic = requestTopic.replace("request", "response");
-    // Send the request with the correlationId header
-    await this.producer.send({
-      topic: requestTopic,
-      messages: [
-        {
-          value: JSON.stringify(requestData),
-          headers: { correlationId },
-        },
-      ],
-    });
+    try {
+      requestTopic = requestTopic.replace("request", "response");
+      // Send the request with the correlationId header
+      await this.producer.send({
+        topic: requestTopic,
+        messages: [
+          {
+            value: JSON.stringify(requestData),
+            headers: { correlationId },
+          },
+        ],
+      });
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   public disconnect = async () => {

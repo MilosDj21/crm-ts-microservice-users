@@ -1,38 +1,21 @@
-import { Request, Response, NextFunction } from "express";
 import winston from "winston";
 import path from "path";
-import fs from "fs";
 
 import { CustomError } from "./CustomError";
 
-export const errorHandler = (
-  err: any,
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
-  //If creating user fails for any reason his profile image needs to be deleted
-  const profileImage = req.file;
-  removeProfileImageOnCreateUserFail(profileImage);
-
+export const errorHandler = (err: any) => {
   if (process.env.NODE_ENV !== "production") console.log(err);
 
-  //If error is defined then log description, and send back message
+  //If error is defined then log description
   if (err instanceof CustomError) {
     logger.error(err.desc);
-    res.status(err.statusCode).json({
-      error: err.message,
-    });
     return;
   }
 
   // Handle unexpected errors
-  // If error is unexpected then log message, and send back custom message
+  // If error is unexpected then log message
   // console.error("Unexpected error:", err);
   logger.error(err.message, { stack: err.stack });
-  res.status(500).json({
-    error: "Internal Server Error",
-  });
   return;
 };
 
@@ -59,22 +42,6 @@ const logger = winston.createLogger({
     }),
   ],
 });
-
-const removeProfileImageOnCreateUserFail = (
-  profileImage: Express.Multer.File | undefined,
-) => {
-  if (profileImage) {
-    fs.unlink(
-      path.join(__dirname, `../../${profileImage.path}`),
-      (error: any) => {
-        if (error) {
-          logger.error(error);
-          console.log(error);
-        }
-      },
-    );
-  }
-};
 
 // if (process.env.NODE_ENV !== "production") {
 //   logger.add(

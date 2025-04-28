@@ -1,7 +1,3 @@
-import qrcode from "qrcode";
-import { authenticator } from "otplib";
-import bcrypt from "bcrypt";
-import { isEmail, isStrongPassword } from "validator";
 import { In, Repository } from "typeorm";
 
 import User from "../entity/User";

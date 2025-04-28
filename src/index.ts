@@ -1,11 +1,19 @@
 import "reflect-metadata";
 import "dotenv/config";
 import AppDataSource from "./data-source";
+import KafkaClient from "./kafka/KafkaClient";
 
-//db connection and connecting kafka client
-AppDataSource.initialize()
-  .then(() => {
+const init = async () => {
+  //db connection and connecting kafka client
+  try {
+    await AppDataSource.initialize();
     console.log("Connected to the database");
-    //TODO: inicijalizuj kafka client
-  })
-  .catch((error: any) => console.log(error));
+    const kafkaClient = await KafkaClient.getInstance();
+    await kafkaClient.subscribeToAllTopics();
+    console.log("Kafka connected and subscribed");
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+init();

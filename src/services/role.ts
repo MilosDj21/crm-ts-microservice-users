@@ -1,14 +1,16 @@
-import { Like, Repository } from "typeorm";
+import { In, Like, Repository } from "typeorm";
 import Role from "../entity/Role";
 import { BadRequestError } from "../errors/CustomError";
+import AppDataSource from "../data-source";
 
 class RoleService {
   private roleRepository: Repository<Role>;
 
-  constructor(roleRepository: Repository<Role>) {
-    this.roleRepository = roleRepository;
+  constructor() {
+    this.roleRepository = AppDataSource.getRepository(Role);
   }
 
+  //TODO: refactor i rename metoda koje treba
   findOne = async (id: string) => {
     const idNum = parseInt(id);
     if (isNaN(idNum)) throw new BadRequestError("Invalid role id");

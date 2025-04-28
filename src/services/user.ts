@@ -1,19 +1,15 @@
-import { In, Repository } from "typeorm";
+import { Repository } from "typeorm";
 
 import User from "../entity/User";
 import { BadRequestError } from "../errors/CustomError";
-import Role from "../entity/Role";
+import AppDataSource from "../data-source";
+import RoleService from "./role";
 
 class UserService {
   private userRepository: Repository<User>;
-  private roleRepository: Repository<Role>;
 
-  constructor(
-    userRepository: Repository<User>,
-    roleRepository: Repository<Role>,
-  ) {
-    this.userRepository = userRepository;
-    this.roleRepository = roleRepository;
+  constructor() {
+    this.userRepository = AppDataSource.getRepository(User);
   }
 
   //TODO: zavrsi implementaciju ostalih, i refactor create

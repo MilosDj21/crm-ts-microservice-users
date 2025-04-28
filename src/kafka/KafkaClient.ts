@@ -49,9 +49,7 @@ class KafkaClient {
         }),
       ),
     );
-    const userRepository = AppDataSource.getRepository(User);
-    const roleRepository = AppDataSource.getRepository(Role);
-    const userService = new UserService(userRepository, roleRepository);
+    const userService = new UserService();
 
     // Run the consumer
     this.consumer.run({

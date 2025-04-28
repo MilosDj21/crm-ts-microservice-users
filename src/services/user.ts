@@ -1,7 +1,7 @@
 import { In, Repository } from "typeorm";
 
 import User from "../entity/User";
-import { BadRequestError } from "../middlewares/CustomError";
+import { BadRequestError } from "../errors/CustomError";
 import Role from "../entity/Role";
 
 class UserService {

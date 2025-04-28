@@ -2,6 +2,7 @@ import "reflect-metadata";
 import "dotenv/config";
 import AppDataSource from "./data-source";
 import KafkaClient from "./kafka/KafkaClient";
+import { errorHandler } from "./errors/errorHandling";
 
 const init = async () => {
   //db connection and connecting kafka client
@@ -12,7 +13,7 @@ const init = async () => {
     await kafkaClient.subscribeToAllTopics();
     console.log("Kafka connected and subscribed");
   } catch (error) {
-    console.log(error);
+    errorHandler(error);
   }
 };
 

@@ -4,6 +4,7 @@ import UserService from "../services/user";
 import AppDataSource from "../data-source";
 import User from "../entity/User";
 import Role from "../entity/Role";
+import { errorHandler } from "../errors/errorHandling";
 
 class KafkaClient {
   private static singleInstance: KafkaClient;
@@ -154,6 +155,7 @@ class KafkaClient {
               topic,
               correlationId,
             );
+            errorHandler(error);
           }
         }
       },
@@ -178,7 +180,7 @@ class KafkaClient {
         ],
       });
     } catch (error) {
-      console.log(error);
+      errorHandler(error);
     }
   };
 
@@ -189,6 +191,7 @@ class KafkaClient {
       console.log("Kafka connections closed gracefully.");
     } catch (err) {
       console.error("Error during Kafka disconnect:", err);
+      errorHandler(err);
     }
   };
 }

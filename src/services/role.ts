@@ -1,6 +1,6 @@
 import { Like, Repository } from "typeorm";
 import Role from "../entity/Role";
-import { BadRequestError } from "../middlewares/CustomError";
+import { BadRequestError } from "../errors/CustomError";
 
 class RoleService {
   private roleRepository: Repository<Role>;

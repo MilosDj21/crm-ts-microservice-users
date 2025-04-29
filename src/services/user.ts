@@ -19,7 +19,9 @@ class UserService {
 
   public findAll = async () => {};
 
-  public create = async (userObject: User) => {
+  //NOTE: userObject must be of type any
+  //because roles are number[], and after that they are converted to Role[]
+  public create = async (userObject: any) => {
     const exist = await this.userRepository.findOneBy({
       email: userObject.email,
     });

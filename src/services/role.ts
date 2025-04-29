@@ -1,6 +1,6 @@
 import { In, Like, Repository } from "typeorm";
 import Role from "../entity/Role";
-import { BadRequestError } from "../errors/CustomError";
+import { BadRequestError, NotFoundError } from "../errors/CustomError";
 import AppDataSource from "../data-source";
 
 class RoleService {
@@ -10,36 +10,33 @@ class RoleService {
     this.roleRepository = AppDataSource.getRepository(Role);
   }
 
-  //TODO: refactor i rename metoda koje treba
-  findOne = async (id: string) => {
-    const idNum = parseInt(id);
-    if (isNaN(idNum)) throw new BadRequestError("Invalid role id");
+  findById = async (id: number) => {
+    if (isNaN(id)) throw new BadRequestError("Invalid role id");
 
-    const role = await this.roleRepository.findOneBy({ id: idNum });
-    if (!role) throw new Error("Failed to retrieve role from the db");
+    const role = await this.roleRepository.findOneBy({ id });
+    if (!role) throw new NotFoundError("Role not found");
 
     return role;
   };
 
-  //TODO: vidi da li moze ovako, posto treba number[] a ne Role[] ali user servis tako salje
-  findByIdList = async (idList: Role[]) => {
+  findByIdList = async (idList: number[]) => {
     const roles = await this.roleRepository.findBy({
       id: In(idList),
     });
-    if (roles.length == 0) return null;
+    if (!roles) throw new NotFoundError("Roles not found");
     return roles;
   };
 
-  find = async (searchTerm: string = "") => {
+  findAll = async (searchTerm: string = "") => {
     const roles = await this.roleRepository.findBy({
       name: Like(`%${searchTerm}%`),
     });
-    if (!roles) throw Error("Failed to retrieve roles from the db");
+    if (!roles) throw new NotFoundError("Roles not found");
 
     return roles;
   };
 
-  saveOne = async (name: string) => {
+  create = async (name: string) => {
     const exist = await this.roleRepository.findOneBy({ name });
     if (exist) throw new BadRequestError("Role already exists");
 
@@ -51,21 +48,19 @@ class RoleService {
     return role;
   };
 
-  updateOne = async (id: string, name: string) => {
-    const idNum = parseInt(id);
-    if (isNaN(idNum)) throw new BadRequestError("Invalid role id");
+  update = async (id: number, name: string) => {
+    if (isNaN(id)) throw new BadRequestError("Invalid role id");
 
-    const role = await this.roleRepository.update(idNum, { name });
+    const role = await this.roleRepository.update(id, { name });
     if (!role) throw new Error("Failed to update role in db");
 
     return role;
   };
 
-  deleteOne = async (id: string) => {
-    const idNum = parseInt(id);
-    if (isNaN(idNum)) throw new BadRequestError("Invalid role id");
+  removeById = async (id: number) => {
+    if (isNaN(id)) throw new BadRequestError("Invalid role id");
 
-    const role = await this.roleRepository.delete(idNum);
+    const role = await this.roleRepository.delete(id);
 
     return role;
   };

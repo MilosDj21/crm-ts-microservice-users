@@ -3,7 +3,7 @@ import { Repository } from "typeorm";
 import User from "../entity/User";
 import { BadRequestError } from "../errors/CustomError";
 import AppDataSource from "../data-source";
-import RoleService from "./role";
+import RoleService from "./roleService";
 
 class UserService {
   private userRepository: Repository<User>;

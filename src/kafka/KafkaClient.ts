@@ -1,8 +1,8 @@
 import { Kafka } from "kafkajs";
 import { v4 as uuidv4 } from "uuid";
 
-import UserService from "../services/user";
-import RoleService from "../services/role";
+import UserService from "../services/userService";
+import RoleService from "../services/roleService";
 import { errorHandler } from "../errors/errorHandling";
 
 class KafkaClient {

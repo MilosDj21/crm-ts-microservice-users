@@ -29,7 +29,6 @@ class UserService {
 
     const roleService = new RoleService();
     const roles = await roleService.findByIdList(userObject.roles);
-    if (!roles) throw new BadRequestError("Non existent roles!");
 
     userObject.roles = roles;
 

@@ -1,9 +1,8 @@
 import { Kafka } from "kafkajs";
 import { v4 as uuidv4 } from "uuid";
+
 import UserService from "../services/user";
-import AppDataSource from "../data-source";
-import User from "../entity/User";
-import Role from "../entity/Role";
+import RoleService from "../services/role";
 import { errorHandler } from "../errors/errorHandling";
 
 class KafkaClient {
@@ -33,7 +32,7 @@ class KafkaClient {
   };
 
   public subscribeToAllTopics = async () => {
-    const topics = [
+    const userTopics = [
       "request-user-by-id",
       "request-user-by-email",
       "request-users",
@@ -41,15 +40,23 @@ class KafkaClient {
       "request-update-user",
       "request-remove-user",
     ];
+    const roleTopics = [
+      "request-role-by-id",
+      "request-roles-by-user-id",
+      "request-roles",
+      "request-create-role",
+      "request-update-role",
+      "request-remove-role",
+    ];
+    const allTopics = [...userTopics, ...roleTopics];
     await Promise.all(
-      topics.map((t) =>
+      allTopics.map((t) =>
         this.consumer.subscribe({
           topic: t,
           fromBeginning: false,
         }),
       ),
     );
-    const userService = new UserService();
 
     // Run the consumer
     this.consumer.run({
@@ -70,79 +77,20 @@ class KafkaClient {
           try {
             const parsed = JSON.parse(message.value.toString());
 
-            let user;
-            switch (topic) {
-              case topics[0]:
-                user = await userService.findById(parsed.data.id);
-                this.emitResponse(
-                  {
-                    data: user,
-                    error: null,
-                  },
-                  topic,
-                  correlationId,
-                );
-                break;
-
-              case topics[1]:
-                user = await userService.findByEmail(parsed.data.email);
-                this.emitResponse(
-                  {
-                    data: user,
-                    error: null,
-                  },
-                  topic,
-                  correlationId,
-                );
-                break;
-
-              case topics[2]:
-                const userList = await userService.findAll();
-                this.emitResponse(
-                  {
-                    data: userList,
-                    error: null,
-                  },
-                  topic,
-                  correlationId,
-                );
-                break;
-
-              case topics[3]:
-                user = await userService.create(parsed.data.userObject);
-                this.emitResponse(
-                  {
-                    data: user,
-                    error: null,
-                  },
-                  topic,
-                  correlationId,
-                );
-                break;
-
-              case topics[4]:
-                user = await userService.update(parsed.data.userObject);
-                this.emitResponse(
-                  {
-                    data: user,
-                    error: null,
-                  },
-                  topic,
-                  correlationId,
-                );
-                break;
-
-              case topics[5]:
-                user = await userService.removeById(parsed.data.id);
-                this.emitResponse(
-                  {
-                    data: user,
-                    error: null,
-                  },
-                  topic,
-                  correlationId,
-                );
-                break;
+            if (userTopics.includes(topic)) {
+              await this.handleUserTopics(
+                topic,
+                userTopics,
+                parsed,
+                correlationId,
+              );
+            } else if (roleTopics.includes(topic)) {
+              await this.handleRoleTopics(
+                topic,
+                roleTopics,
+                parsed,
+                correlationId,
+              );
             }
           } catch (error) {
             this.emitResponse(
@@ -158,6 +106,175 @@ class KafkaClient {
         }
       },
     });
+  };
+
+  private handleUserTopics = async (
+    topic: string,
+    topics: string[],
+    parsed: any,
+    correlationId: string,
+  ) => {
+    let user;
+    const userService = new UserService();
+
+    switch (topic) {
+      case topics[0]:
+        user = await userService.findById(parsed.data.id);
+        this.emitResponse(
+          {
+            data: user,
+            error: null,
+          },
+          topic,
+          correlationId,
+        );
+        break;
+
+      case topics[1]:
+        user = await userService.findByEmail(parsed.data.email);
+        this.emitResponse(
+          {
+            data: user,
+            error: null,
+          },
+          topic,
+          correlationId,
+        );
+        break;
+
+      case topics[2]:
+        const userList = await userService.findAll();
+        this.emitResponse(
+          {
+            data: userList,
+            error: null,
+          },
+          topic,
+          correlationId,
+        );
+        break;
+
+      case topics[3]:
+        user = await userService.create(parsed.data.userObject);
+        this.emitResponse(
+          {
+            data: user,
+            error: null,
+          },
+          topic,
+          correlationId,
+        );
+        break;
+
+      case topics[4]:
+        user = await userService.update(parsed.data.userObject);
+        this.emitResponse(
+          {
+            data: user,
+            error: null,
+          },
+          topic,
+          correlationId,
+        );
+        break;
+
+      case topics[5]:
+        user = await userService.removeById(parsed.data.id);
+        this.emitResponse(
+          {
+            data: user,
+            error: null,
+          },
+          topic,
+          correlationId,
+        );
+        break;
+    }
+  };
+
+  private handleRoleTopics = async (
+    topic: string,
+    topics: string[],
+    parsed: any,
+    correlationId: string,
+  ) => {
+    let role;
+    const roleService = new RoleService();
+
+    switch (topic) {
+      case topics[0]:
+        role = await roleService.findById(parsed.data.id);
+        this.emitResponse(
+          {
+            data: role,
+            error: null,
+          },
+          topic,
+          correlationId,
+        );
+        break;
+
+      //TODO: vidi kako da ovo implementiras, i da li uopste treba da se nadju role po user id
+      //case topics[1]:
+      //  role = await roleService.findByUserId(parsed.data.id);
+      //  this.emitResponse(
+      //    {
+      //      data: role,
+      //      error: null,
+      //    },
+      //    topic,
+      //    correlationId,
+      //  );
+      //  break;
+
+      case topics[2]:
+        const roleList = await roleService.findAll();
+        this.emitResponse(
+          {
+            data: roleList,
+            error: null,
+          },
+          topic,
+          correlationId,
+        );
+        break;
+
+      case topics[3]:
+        role = await roleService.create(parsed.data.name);
+        this.emitResponse(
+          {
+            data: role,
+            error: null,
+          },
+          topic,
+          correlationId,
+        );
+        break;
+
+      case topics[4]:
+        role = await roleService.update(parsed.data.id, parsed.data.name);
+        this.emitResponse(
+          {
+            data: role,
+            error: null,
+          },
+          topic,
+          correlationId,
+        );
+        break;
+
+      case topics[5]:
+        role = await roleService.removeById(parsed.data.id);
+        this.emitResponse(
+          {
+            data: role,
+            error: null,
+          },
+          topic,
+          correlationId,
+        );
+        break;
+    }
   };
 
   private emitResponse = async (

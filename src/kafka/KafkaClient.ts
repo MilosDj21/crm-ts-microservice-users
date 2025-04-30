@@ -214,18 +214,17 @@ class KafkaClient {
         );
         break;
 
-      //TODO: vidi kako da ovo implementiras, i da li uopste treba da se nadju role po user id
-      //case topics[1]:
-      //  role = await roleService.findByUserId(parsed.data.id);
-      //  this.emitResponse(
-      //    {
-      //      data: role,
-      //      error: null,
-      //    },
-      //    topic,
-      //    correlationId,
-      //  );
-      //  break;
+      case topics[1]:
+        role = await roleService.findByUserId(parsed.data.id);
+        this.emitResponse(
+          {
+            data: role,
+            error: null,
+          },
+          topic,
+          correlationId,
+        );
+        break;
 
       case topics[2]:
         const roleList = await roleService.findAll();

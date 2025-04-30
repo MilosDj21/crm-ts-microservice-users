@@ -2,6 +2,7 @@ import { In, Like, Repository } from "typeorm";
 import Role from "../entity/Role";
 import { BadRequestError, NotFoundError } from "../errors/CustomError";
 import AppDataSource from "../data-source";
+import UserService from "./userService";
 
 class RoleService {
   private roleRepository: Repository<Role>;
@@ -25,6 +26,12 @@ class RoleService {
     });
     if (!roles) throw new NotFoundError("Roles not found");
     return roles;
+  };
+
+  findByUserId = async (userId: number) => {
+    const userService = new UserService();
+    const user = await userService.findById(userId);
+    return user.roles;
   };
 
   findAll = async (searchTerm: string = "") => {

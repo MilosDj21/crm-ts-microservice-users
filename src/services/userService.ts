@@ -1,7 +1,7 @@
 import { Repository } from "typeorm";
 
 import User from "../entity/User";
-import { BadRequestError } from "../errors/CustomError";
+import { BadRequestError, NotFoundError } from "../errors/CustomError";
 import AppDataSource from "../data-source";
 import RoleService from "./roleService";
 
@@ -12,12 +12,23 @@ class UserService {
     this.userRepository = AppDataSource.getRepository(User);
   }
 
-  //TODO: zavrsi implementaciju ostalih, i refactor create
-  public findById = async (id: number) => {};
+  public findById = async (id: number) => {
+    const user = await this.userRepository.findOneBy({ id });
+    if (!user) throw new NotFoundError("User not found");
+    return user;
+  };
 
-  public findByEmail = async (email: string) => {};
+  public findByEmail = async (email: string) => {
+    const user = await this.userRepository.findOneBy({ email });
+    if (!user) throw new NotFoundError("User not found");
+    return user;
+  };
 
-  public findAll = async () => {};
+  public findAll = async () => {
+    const userList = await this.userRepository.find();
+    if (!userList) throw new NotFoundError("Users not found");
+    return userList;
+  };
 
   //NOTE: userObject must be of type any
   //because roles are number[], and after that they are converted to Role[]
@@ -38,9 +49,16 @@ class UserService {
     return user;
   };
 
-  public update = async (id: number) => {};
+  public update = async (userObject: any) => {
+    const user = await this.userRepository.update(userObject.id, userObject);
+    if (!user) throw new Error("Failed to update user");
+    return user;
+  };
 
-  public removeById = async (id: number) => {};
+  public removeById = async (id: number) => {
+    const user = await this.userRepository.delete(id);
+    return user;
+  };
 }
 
 export default UserService;

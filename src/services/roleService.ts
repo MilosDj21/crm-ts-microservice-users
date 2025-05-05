@@ -11,7 +11,7 @@ class RoleService {
     this.roleRepository = AppDataSource.getRepository(Role);
   }
 
-  findById = async (id: number) => {
+  public findById = async (id: number) => {
     if (isNaN(id)) throw new BadRequestError("Invalid role id");
 
     const role = await this.roleRepository.findOneBy({ id });
@@ -20,7 +20,7 @@ class RoleService {
     return role;
   };
 
-  findByIdList = async (idList: number[]) => {
+  public findByIdList = async (idList: number[]) => {
     const roles = await this.roleRepository.findBy({
       id: In(idList),
     });
@@ -28,13 +28,13 @@ class RoleService {
     return roles;
   };
 
-  findByUserId = async (userId: number) => {
+  public findByUserId = async (userId: number) => {
     const userService = new UserService();
     const user = await userService.findById(userId);
     return user.roles;
   };
 
-  findAll = async (searchTerm: string = "") => {
+  public findAll = async (searchTerm: string = "") => {
     const roles = await this.roleRepository.findBy({
       name: Like(`%${searchTerm}%`),
     });
@@ -43,7 +43,7 @@ class RoleService {
     return roles;
   };
 
-  create = async (name: string) => {
+  public create = async (name: string) => {
     const exist = await this.roleRepository.findOneBy({ name });
     if (exist) throw new BadRequestError("Role already exists");
 
@@ -55,7 +55,7 @@ class RoleService {
     return role;
   };
 
-  update = async (id: number, name: string) => {
+  public update = async (id: number, name: string) => {
     if (isNaN(id)) throw new BadRequestError("Invalid role id");
 
     const role = await this.roleRepository.update(id, { name });
@@ -64,7 +64,7 @@ class RoleService {
     return role;
   };
 
-  removeById = async (id: number) => {
+  public removeById = async (id: number) => {
     if (isNaN(id)) throw new BadRequestError("Invalid role id");
 
     const role = await this.roleRepository.delete(id);
